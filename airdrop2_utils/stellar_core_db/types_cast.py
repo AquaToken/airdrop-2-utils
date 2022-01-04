@@ -1,7 +1,7 @@
 from typing import Union
 
 from stellar_sdk import Asset, LiquidityPoolAsset
-from stellar_sdk.xdr import AssetType, Hash, LedgerEntry, PoolID, TrustLineAsset, ClaimableBalanceEntry, PublicKey
+from stellar_sdk.xdr import AssetType, ClaimableBalanceEntry, Hash, LedgerEntry, PoolID, PublicKey, TrustLineAsset
 
 
 def pack_trust_line_asset(asset: Union[Asset, LiquidityPoolAsset]) -> str:

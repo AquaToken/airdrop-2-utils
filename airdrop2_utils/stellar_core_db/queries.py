@@ -6,7 +6,7 @@ from sqlalchemy.sql import Select
 from stellar_sdk import Asset
 
 from airdrop2_utils.constants.assets import AQUA, YXLM
-from airdrop2_utils.stellar_core_db.models import Account, LiquidityPool, TrustLine, ClaimableBalance
+from airdrop2_utils.stellar_core_db.models import Account, ClaimableBalance, LiquidityPool, TrustLine
 from airdrop2_utils.stellar_core_db.types_cast import pack_trust_line_asset
 
 

@@ -1,6 +1,6 @@
 import logging
 import operator
-from decimal import Decimal, ROUND_DOWN
+from decimal import ROUND_DOWN, Decimal
 from functools import reduce
 from multiprocessing import Pool
 from typing import Iterable, Optional
@@ -8,16 +8,32 @@ from typing import Iterable, Optional
 from sqlalchemy.orm import Session
 from stellar_sdk import Asset, Keypair
 
-from airdrop2_utils.constants.airdrop import AQUA_REQUIREMENTS, XLM_REQUIREMENTS, LOCK_START_TIMESTAMP, \
-    MAX_LOCK_TERM, MAX_LOCK_BOOST, AIRDROP_VALUE, AIRDROP_CAP, AIRDROP_CAP_EXCEPTIONS
+from airdrop2_utils.constants.airdrop import (
+    AIRDROP_CAP,
+    AIRDROP_CAP_EXCEPTIONS,
+    AIRDROP_VALUE,
+    AQUA_REQUIREMENTS,
+    LOCK_START_TIMESTAMP,
+    MAX_LOCK_BOOST,
+    MAX_LOCK_TERM,
+    XLM_REQUIREMENTS,
+)
 from airdrop2_utils.constants.assets import AQUA, XLM, YXLM
 from airdrop2_utils.constants.stellar import XLM_TO_STROOP
 from airdrop2_utils.data import AirdropAccount, LiquidityPoolData, LiquidityPoolParticipant, Lock
 from airdrop2_utils.stellar_core_db.models import ClaimableBalance
-from airdrop2_utils.stellar_core_db.queries import get_airdrop_candidates, get_asset_liquidity_pool, \
-    get_trustline_for_liquidity_pools, get_all_claimable_balances
-from airdrop2_utils.stellar_core_db.types_cast import unpack_trust_line_balance, unpack_liquidity_pool_data, \
-    pack_trust_line_asset, unpack_claimable_balance
+from airdrop2_utils.stellar_core_db.queries import (
+    get_airdrop_candidates,
+    get_all_claimable_balances,
+    get_asset_liquidity_pool,
+    get_trustline_for_liquidity_pools,
+)
+from airdrop2_utils.stellar_core_db.types_cast import (
+    pack_trust_line_asset,
+    unpack_claimable_balance,
+    unpack_liquidity_pool_data,
+    unpack_trust_line_balance,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -91,7 +107,7 @@ def load_liquidity_pool_participants(asset: Asset, *, session: Session) -> Itera
 
 
 def reduce_liquidity_pool_participants(
-    participants: Iterable[LiquidityPoolParticipant]
+    participants: Iterable[LiquidityPoolParticipant],
 ) -> Iterable[LiquidityPoolParticipant]:
     accumulator = {}
     for participant in participants:
@@ -225,8 +241,8 @@ def load_airdrop_accounts(*, session: Session, aqua_price: Decimal) -> Iterable[
             candidate['aqua_lock_term'] = 0
 
         xlm_balance = (
-            candidate['native_balance'] + candidate['yxlm_balance'] +
-            candidate['native_pool_balance'] + candidate['yxlm_pool_balance']
+            candidate['native_balance'] + candidate['yxlm_balance']
+            + candidate['native_pool_balance'] + candidate['yxlm_pool_balance']
         )
         aqua_balance = candidate['aqua_balance'] + candidate['aqua_pool_balance']
 
