@@ -159,7 +159,7 @@ def load_locks(*, session: Session) -> Iterable[Lock]:
     claimable_balances = (balance for balance, in session.execute(query))
 
     with Pool() as pool:
-        for index, lock in pool.imap_unordered(parse_lock, claimable_balances):
+        for index, lock in enumerate(pool.imap_unordered(parse_lock, claimable_balances)):
             if index % 1000 == 0:
                 logger.info(f'Parsed claimable balance #{index}.')
 
@@ -260,7 +260,7 @@ def load_airdrop_accounts(*, session: Session, aqua_price: Decimal) -> Iterable[
         yield candidate
 
 
-def cut_cap_exceeded_accounts(airdrop_accounts: Iterable[AirdropAccount]) -> Iterable[AirdropAccount]:
+def set_airdrop_rewards(airdrop_accounts: Iterable[AirdropAccount]) -> Iterable[AirdropAccount]:
     accounts_to_distribute = list(airdrop_accounts)
     aqua_to_distribute = AIRDROP_VALUE
 
@@ -269,7 +269,7 @@ def cut_cap_exceeded_accounts(airdrop_accounts: Iterable[AirdropAccount]) -> Ite
                                       map(operator.itemgetter('airdrop_shares'), accounts_to_distribute),
                                       Decimal(0))
         share_price = aqua_to_distribute / total_airdrop_shares
-        logger.info(f'Current share price created by {len(accounts_to_distribute)} accounts is {share_price}.')
+        logger.info(f'Current share price based on {len(accounts_to_distribute)} accounts is {share_price}.')
 
         index = 0
         account_cut_off = False
@@ -284,8 +284,8 @@ def cut_cap_exceeded_accounts(airdrop_accounts: Iterable[AirdropAccount]) -> Ite
             logger.info(f'{account["account_id"]} cut off with rewards {airdrop_reward}.')
 
             account['airdrop_reward'] = AIRDROP_CAP
-            accounts_to_distribute.pop(index)
             aqua_to_distribute -= AIRDROP_CAP
+            accounts_to_distribute.pop(index)
             account_cut_off = True
 
             yield account
