@@ -30,6 +30,8 @@ django-debug-toolbar = "*"
 ipython = "*"
 psycopg2 = "*"
 stellar-sdk = "*"
+SQLAlchemy = "*"
+requests = "*"
 
 [requires]
 python_version = "3.9"
