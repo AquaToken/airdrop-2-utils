@@ -55,7 +55,7 @@ def load_airdrop_candidates(*, session: Session) -> Iterable[AirdropAccount]:
 
         yield AirdropAccount(
             account_id=account.accountid,
-            native_balance=account.balance,
+            native_balance=native_balance,
             aqua_balance=aqua_balance,
             yxlm_balance=yxlm_balance,
         )
