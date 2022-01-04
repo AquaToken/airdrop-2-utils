@@ -212,7 +212,7 @@ def load_airdrop_accounts(*, session: Session, aqua_price: Decimal) -> Iterable[
         lock['account_id']: lock for lock in locks_data
     }
 
-    logger.info('Locks data loaded.')
+    logger.info(f'Locks data loaded. {len(locks_dict)} locks.')
 
     for index, candidate in enumerate(load_airdrop_candidates(session=session)):
         if index % 1000 == 0:
