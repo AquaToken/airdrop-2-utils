@@ -4,8 +4,9 @@ import logging
 from datetime import datetime, timezone
 
 from airdrop2_utils.horizon import get_aqua_price
-from airdrop2_utils.snapshot import set_airdrop_rewards, load_airdrop_accounts
+from airdrop2_utils.snapshot import load_airdrop_accounts, set_airdrop_rewards
 from airdrop2_utils.stellar_core_db.session import make_session
+
 
 logger = logging.getLogger(__name__)
 

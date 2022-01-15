@@ -191,6 +191,27 @@ def reduce_locks(locks: Iterable[Lock]) -> Iterable[Lock]:
         )
 
 
+def set_airdrop_shares(account: AirdropAccount, *, aqua_price: Decimal) -> AirdropAccount:
+    xlm_balance = (
+        account['native_balance'] + account['yxlm_balance']
+        + account['native_pool_balance'] + account['yxlm_pool_balance']
+    )
+    aqua_balance = account['aqua_balance'] + account['aqua_pool_balance']
+
+    unlocked_shares = xlm_balance + aqua_price * aqua_balance
+    locked_shares = aqua_price * account['aqua_lock_balance']
+
+    user_value_lock_multiplier = min(locked_shares, unlocked_shares) / unlocked_shares
+    user_time_lock_multiplier = Decimal(min(MAX_LOCK_TERM, account['aqua_lock_term']) / MAX_LOCK_TERM)
+
+    user_total_lock_multiplier = user_value_lock_multiplier * user_time_lock_multiplier
+    user_boost = MAX_LOCK_BOOST * user_total_lock_multiplier
+
+    account['airdrop_shares'] = (unlocked_shares + locked_shares) * (1 + user_boost)
+
+    return account
+
+
 def load_airdrop_accounts(*, session: Session, aqua_price: Decimal) -> Iterable[AirdropAccount]:
     native_pool_data = reduce_liquidity_pool_participants(load_liquidity_pool_participants(XLM, session=session))
     native_pool_dict = {
@@ -240,22 +261,7 @@ def load_airdrop_accounts(*, session: Session, aqua_price: Decimal) -> Iterable[
             candidate['aqua_lock_balance'] = Decimal(0)
             candidate['aqua_lock_term'] = 0
 
-        xlm_balance = (
-            candidate['native_balance'] + candidate['yxlm_balance']
-            + candidate['native_pool_balance'] + candidate['yxlm_pool_balance']
-        )
-        aqua_balance = candidate['aqua_balance'] + candidate['aqua_pool_balance']
-
-        unlocked_shares = xlm_balance + aqua_price * aqua_balance
-        locked_shares = aqua_price * candidate['aqua_lock_balance']
-
-        user_value_lock_multiplier = min(locked_shares, unlocked_shares) / unlocked_shares
-        user_time_lock_multiplier = Decimal(min(MAX_LOCK_TERM, candidate['aqua_lock_term']) / MAX_LOCK_TERM)
-
-        user_total_lock_multiplier = user_value_lock_multiplier * user_time_lock_multiplier
-        user_boost = MAX_LOCK_BOOST * user_total_lock_multiplier
-
-        candidate['airdrop_shares'] = (unlocked_shares + locked_shares) * (1 + user_boost)
+        candidate = set_airdrop_shares(candidate, aqua_price=aqua_price)
 
         yield candidate
 
