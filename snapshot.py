@@ -1,7 +1,7 @@
 import argparse
 import csv
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from airdrop2_utils.horizon import get_aqua_price
 from airdrop2_utils.snapshot import set_airdrop_rewards, load_airdrop_accounts
@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 def make_snapshot(db_url, output_file, *, tuples_only):
-    now = datetime.utcnow()
-    aqua_price = get_aqua_price(now)
+    snapshot_time = datetime(2022, 1, 15, tzinfo=timezone.utc)
+    aqua_price = get_aqua_price(snapshot_time)
 
     logger.info('AQUA price loaded.')
 
