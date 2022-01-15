@@ -149,7 +149,7 @@ def parse_lock(claimable_balance: ClaimableBalance) -> Optional[Lock]:
 
     return Lock(
         account_id=account_keypair.public_key,
-        amount=claimable_balance_entry.amount.int64,
+        amount=claimable_balance_entry.amount.int64 / XLM_TO_STROOP,
         term=min(unlock_at - LOCK_START_TIMESTAMP, MAX_LOCK_TERM),
     )
 
